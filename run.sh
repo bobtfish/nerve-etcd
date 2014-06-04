@@ -15,7 +15,7 @@ if [ $? != 0 ];then
 fi
 
 sed -i -e"s/%%NERVE_INSTANCE%%/${NERVE_INSTANCE}/" /nerve.conf.json
-env|egrep '\w+_PORT=tcp://'|sed -e's/\(.*\)_PORT=tcp:../\1:/'|ruby1.9.3 -e'require "json";STDIN.each_line {|l| d=l.split(/:/); File.open("/nerve_services/#{d[0]}.json", "w") {|f| f.puts Hash["host",d[1],"port",d[2],"reporter_type","etcd","etcd_host","etcd","etcd_port",4001,"etcd_path","/nerve/services/your_service_name/services","check_interval",2,"checks",[Hash["type","tcp","timeout",0.2,"rise",3,"fall",2]]].to_json}}'
+env|egrep '\w+_PORT=tcp://'|sed -e's/\(.*\)_PORT=tcp:../\1:/'|ruby1.9.3 -e'require "json";STDIN.each_line {|l| d=l.chomp.split(/:/); File.open("/nerve_services/#{d[0]}.json", "w") {|f| f.puts Hash["host",d[1],"port",d[2],"reporter_type","etcd","etcd_host","etcd","etcd_port",4001,"etcd_path","/nerve/services/your_service_name/services","check_interval",2,"checks",[Hash["type","tcp","timeout",0.2,"rise",3,"fall",2]]].to_json}}'
 rm /nerve_services/ETCD.json
 
 # Default argument
