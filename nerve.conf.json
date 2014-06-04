@@ -1,0 +1,6 @@
+{
+  "instance_id": "%%INSTANCE_ID%%",
+  "service_conf_dir": "/nerve_services",
+  "services": {}
+}
+
