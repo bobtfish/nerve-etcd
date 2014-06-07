@@ -7,10 +7,10 @@ if [ "$NERVE_INSTANCE" == "" ];then
   NERVE_INSTANCE=$(hostname --fqdn) # Container #ID
 fi
 if [ "$ETCD_PORT_4001_TCP_ADDR" == "" ];then
-  echo "WARNING: Cannot find ETCD_PORT_4001_TCP_ADDR variable, you need to link an etcd container to this container!" >&2
+  echo "Cannot find ETCD_PORT_4001_TCP_ADDR variable, you need to link an etcd container to this container!" >&2
   exit 2
 fi
-if [ "ETCD_PORT_4001_TCP_PORT" == "" ];then
+if [ "$ETCD_PORT_4001_TCP_PORT" == "" ];then
   ETCD_PORT_4001_TCP_PORT=4001
 fi
 
@@ -25,10 +25,6 @@ fi
 
 # Default argument
 if [ "$1" == "run" ];then
-  if [ $PINGSTATUS != 0 ];then
-    echo "Shelling out as setup failed"
-    exec /bin/bash
-  fi
   exec /usr/local/bin/nerve -c /nerve.conf.json
 fi
 
