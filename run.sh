@@ -4,8 +4,9 @@ if [ "$NERVE_APP" == "" ];then
   exit 1
 fi
 if [ "$NERVE_INSTANCE" == "" ];then
-  echo "NERVE_INSTANCE environment variable must be set" >&2
-  exit 1
+  NERVE_INSTANCE=$(hostname --fqdn) # Container #ID
+#  echo "NERVE_INSTANCE environment variable must be set" >&2
+#  exit 1
 fi
 PINGOUT=$(ping -c 1 -i 0 etcd 2>&1);
 PINGSTATUS=$?
@@ -15,7 +16,7 @@ if [ $PINGSTATUS != 0 ];then
   exit 2
 fi
 
-sed -i -e"s/%%NERVE_INSTANCE%%/${NERVE_INSTANCE}/" /nerve.conf.json
+sed -i -e"s/%%INSTANCE_ID%%/${NERVE_INSTANCE}/" /nerve.conf.json
 env|egrep '\w+_PORT=tcp://'|sed -e's/\(.*\)_PORT=tcp:../\1:/'|ruby1.9.3 -e'require "json";STDIN.each_line {|l| d=l.chomp.split(/:/); File.open("/nerve_services/#{d[0]}.json", "w") {|f| f.puts Hash["host",d[1],"port",d[2],"reporter_type","etcd","etcd_host",ENV["ETCD_PORT_4001_TCP_ADDR"],"etcd_port",ENV["ETCD_PORT_4001_TCP_PORT"].to_i,"etcd_path","/nerve/services/#{ENV[\"NERVE_APP\"]}/services","check_interval",2,"checks",[Hash["type","tcp","timeout",0.2,"rise",3,"fall",2]]].to_json}}'
 rm -f /nerve_services/ETCD.json
 
